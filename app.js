@@ -168,7 +168,6 @@ function renderManagementSchedules(role) {
     let html = "";
     schedules.forEach(s => {
         // Berechtigungsprüfung fürs Löschen
-        // Kommission darf ALLES löschen, Ausbilder NUR von 'ausbilder'
         const kannLoeschen = (role === 'kommission' || (role === 'ausbilder' && s.createdBy === 'ausbilder'));
         
         html += `<div class="schedule-item">
