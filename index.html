@@ -24,11 +24,16 @@
             </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
     <script>
         // Initialisiert die Ansicht für normale User
         document.addEventListener('DOMContentLoaded', () => {
-            renderModules();
+            if (typeof supabase !== 'undefined') {
+                renderModules();
+            } else {
+                console.error("Supabase konnte nicht geladen werden.");
+            }
             
             // Suchfunktion
             document.getElementById('searchInput').addEventListener('input', (e) => {
