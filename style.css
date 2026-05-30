@@ -7,7 +7,7 @@
 }
 
 body {
-    background-image: url('Pol_Hintergrund.jpg');
+    background-image: url('Pol_Hintergrund.jpg'); /* Auf .jpg geändert */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -120,4 +120,4 @@ input, select {
 }
 .tag-in-verwendung { background-color: #4cd137; color: black; }
 .tag-in-bearbeitung { background-color: #e1b12c; color: black; }
-.tag-außerkraft { background-color: #c23616; color: white; }
+.tag-außerkraft { background-color: #c23616; color: white; 
