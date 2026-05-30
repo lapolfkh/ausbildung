@@ -1,3 +1,7 @@
+/* eslint-env browser, es6 */
+/* eslint-disable no-unused-vars */
+"use strict";
+
 // --- FESTE LOGINDATEN ---
 const USERS = {
     ausbilder: { user: "AusbildungPolFKH", pass: "PolizeiFKH" },
