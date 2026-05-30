@@ -1,9 +1,13 @@
+// SUPABASE KONFIGURATION
+const SUPABASE_URL = "https://faopamglziztknceaqsv.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhb3BhbWdseml6dGtuY2VhcXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDE3MTQsImV4cCI6MjA5NTcxNzcxNH0.7Da4mEBPW1p3jQ6x_v3IuG2BNVmT7OmORjyM3F-I7x8";
+
+// Verbindung zu Supabase herstellen
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 // Admin Zugangsdaten
 const ADMIN_USER = "PolizeiAdmin";
 const ADMIN_PASS = "##AdminPolizeiFKH##";
-
-// Holt die Module aus dem LocalStorage oder erstellt ein leeres Array
-let modules = JSON.parse(localStorage.getItem('fkh_modules')) || [];
 
 // LOGIN FUNKTION
 function login() {
@@ -30,8 +34,8 @@ function showDashboard() {
     renderAdminModules();
 }
 
-// MODUL ERSTELLEN
-function createNewModule() {
+// MODUL ERSTELLEN (In Datenbank speichern)
+async function createNewModule() {
     const name = document.getElementById('modName').value;
     const link = document.getElementById('modLink').value;
     const status = document.getElementById('modStatus').value;
@@ -45,28 +49,22 @@ function createNewModule() {
     const now = new Date();
     const timestamp = now.toLocaleDateString('de-DE') + ' - ' + now.toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'});
 
-    const newModule = {
-        id: Date.now(), // Eindeutige ID
-        name: name,
-        link: link,
-        status: status,
-        date: timestamp
-    };
+    // Daten in Supabase hochladen
+    const { data, error } = await supabase
+        .from('modules')
+        .insert([{ name: name, link: link, status: status, date: timestamp }]);
 
-    modules.push(newModule);
-    saveToStorage();
-    
-    // Felder leeren
-    document.getElementById('modName').value = '';
-    document.getElementById('modLink').value = '';
-    
-    renderAdminModules();
-    alert('Modul erfolgreich hochgeladen!');
-}
-
-// SPEICHERN
-function saveToStorage() {
-    localStorage.setItem('fkh_modules', JSON.stringify(modules));
+    if (error) {
+        console.error("Fehler beim Hochladen:", error);
+        alert("Fehler beim Speichern in der Datenbank!");
+    } else {
+        // Felder leeren
+        document.getElementById('modName').value = '';
+        document.getElementById('modLink').value = '';
+        
+        renderAdminModules();
+        alert('Modul erfolgreich für alle hochgeladen!');
+    }
 }
 
 // KLASSEN-STYLING FÜR TAGS HOLEN
@@ -76,14 +74,27 @@ function getStatusClass(status) {
     return 'tag-außerkraft';
 }
 
-// MODULE FÜR USER ANZEIGEN (inkl. Suche)
-function renderModules(searchQuery = '') {
+// MODULE FÜR USER ANZEIGEN (Aus Datenbank laden + Suche)
+async function renderModules(searchQuery = '') {
     const container = document.getElementById('modulesContainer');
     if(!container) return;
     
+    container.innerHTML = '<p>Lade Module...</p>';
+
+    // Daten live aus Supabase abrufen
+    let { data: dbModules, error } = await supabase
+        .from('modules')
+        .select('*');
+
+    if (error) {
+        container.innerHTML = '<p>Fehler beim Laden der Module.</p>';
+        return;
+    }
+
     container.innerHTML = '';
 
-    const filtered = modules.filter(mod => 
+    // Suchfilter anwenden
+    const filtered = dbModules.filter(mod => 
         mod.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -105,14 +116,25 @@ function renderModules(searchQuery = '') {
     });
 }
 
-// MODULE FÜR ADMIN ANZEIGEN (Mit Live-Statusänderung & Löschen)
-function renderAdminModules() {
+// MODULE FÜR ADMIN ANZEIGEN
+async function renderAdminModules() {
     const container = document.getElementById('adminModulesContainer');
     if(!container) return;
 
+    container.innerHTML = '<p>Lade Module...</p>';
+
+    let { data: dbModules, error } = await supabase
+        .from('modules')
+        .select('*');
+
+    if (error) {
+        container.innerHTML = '<p>Fehler beim Laden.</p>';
+        return;
+    }
+
     container.innerHTML = '';
 
-    modules.forEach(mod => {
+    dbModules.forEach(mod => {
         const card = document.createElement('div');
         card.className = 'module-card';
         card.innerHTML = `
@@ -132,23 +154,32 @@ function renderAdminModules() {
     });
 }
 
-// STATUS LIVE ÄNDERN
-function updateStatus(id, newStatus) {
-    modules = modules.map(mod => {
-        if(mod.id === id) {
-            mod.status = newStatus;
-        }
-        return mod;
-    });
-    saveToStorage();
-    renderAdminModules();
+// STATUS LIVE IN DATENBANK ÄNDERN
+async function updateStatus(id, newStatus) {
+    const { error } = await supabase
+        .from('modules')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+    if (error) {
+        alert("Fehler beim Aktualisieren!");
+    } else {
+        renderAdminModules();
+    }
 }
 
 // MODUL LÖSCHEN
-function deleteModule(id) {
-    if(confirm('Möchtest du dieses Modul wirklich löschen?')) {
-        modules = modules.filter(mod => mod.id !== id);
-        saveToStorage();
-        renderAdminModules();
+async function deleteModule(id) {
+    if(confirm('Möchtest du dieses Modul wirklich für ALLE löschen?')) {
+        const { error } = await supabase
+            .from('modules')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            alert("Fehler beim Löschen!");
+        } else {
+            renderAdminModules();
+        }
     }
 }
