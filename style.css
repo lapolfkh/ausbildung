@@ -9,13 +9,21 @@ body {
     min-height: 100vh;
 }
 
+@keyframes blink {
+  0% { background-color: rgba(5, 10, 20, 0.95); }
+  50% { background-color: rgba(255, 0, 0, 0.4); }
+  100% { background-color: rgba(5, 10, 20, 0.95); }
+}
+
+.blink-red { animation: blink 0.5s linear infinite; }
+
 .container {
     max-width: 900px;
     margin: 40px auto;
     padding: 30px;
-    background-color: rgba(10, 25, 47, 0.9);
+    background-color: rgba(5, 10, 20, 0.95);
     border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.7);
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
     border: 1px solid #0056b3;
 }
 
@@ -29,26 +37,45 @@ button {
     font-size: 1.1em; font-weight: bold; transition: 0.2s; color: white;
 }
 .btn-portal { width: 100%; }
-.azubi { background-color: #44bd32; } .azubi:hover { background-color: #4cd137; }
-.ausbilder { background-color: #0097e6; } .ausbilder:hover { background-color: #00a8ff; }
-.kommission { background-color: #c23616; } .kommission:hover { background-color: #e84118; }
-.btn-back { background-color: #718093; padding: 10px; margin-top: 10px;}
+.azubi { background-color: #38a3a5; } .azubi:hover { background-color: #57cc99; }
+.ausbilder { background-color: #0056b3; } .ausbilder:hover { background-color: #00a8ff; }
+.kommission { background-color: #9e2a2b; } .kommission:hover { background-color: #c23616; }
+.btn-back { background-color: #4a5a73; padding: 10px; margin-top: 10px;}
 
-.login-box, .module-section, .schedule-section, .exam-control-section {
-    background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; margin-bottom: 20px;
+.login-box, .module-section, .schedule-section, .exam-control-section, .schedule-management-list {
+    background: rgba(255,255,255,0.02); padding: 20px; border-radius: 8px; margin-bottom: 20px;
 }
 
 input, select {
     padding: 12px; margin: 8px 0; width: 100%; border-radius: 4px;
-    border: 1px solid #00a8ff; background: #0a192f; color: white;
+    border: 1px solid #00a8ff; background: #050a14; color: white;
 }
 
 .module-link {
-    display: block; padding: 12px; margin: 8px 0; background: #273c75;
+    display: block; padding: 12px; margin: 8px 0; background: #1a2a4c;
     color: white; text-decoration: none; border-radius: 4px; border-left: 5px solid #00a8ff;
 }
-.module-link:hover { background: #192a56; }
-.module-link.exam { border-left-color: #e1b12c; }
+.module-link:hover { background: #233765; }
+.module-link.exam { border-left-color: #ffb703; }
 .module-link.pdf { border-left-color: #c23616; }
 
-.btn-exam-unlock { background-color: #e1b12c; color: black; width: 100%; padding: 15px; margin-top: 10px;}
+.btn-exam-unlock { background-color: #ffb703; color: black; width: 100%; padding: 15px; margin-top: 10px;}
+
+/* Terminverwaltung-Zeilen */
+.schedule-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255,255,255,0.05); padding: 10px; margin-bottom: 8px; border-radius: 4px;
+}
+.btn-delete-item {
+    background-color: #c23616; color: white; padding: 5px 12px; font-size: 0.9em; border-radius: 4px;
+}
+.btn-delete-item:hover { background-color: #e84118; }
+
+.exam-checkboxes { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
+.container-checkbox { display: block; position: relative; padding-left: 35px; margin-bottom: 12px; cursor: pointer; font-size: 1.1em; user-select: none; }
+.container-checkbox input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+.checkmark { position: absolute; top: 0; left: 0; height: 25px; width: 25px; background-color: rgba(255,255,255,0.1); border-radius: 4px; border: 1px solid #00a8ff; }
+.container-checkbox:hover input ~ .checkmark { background-color: rgba(255,255,255,0.15); }
+.container-checkbox input:checked ~ .checkmark { background-color: #00a8ff; }
+.checkmark:after { content: ""; position: absolute; display: none; left: 9px; top: 5px; width: 5px; height: 10px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+.container-checkbox input:checked ~ .checkmark:after { display: block; }
