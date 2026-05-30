@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polizei Falkenheim - Ausbildungsportal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Landespolizei Falkenheim</h1>
+            <h2>Ausbildungs- & Prüfungsportal</h2>
+        </header>
+
+        <div id="mainMenu" class="portal-selection">
+            <button onclick="openPortal('azubi')" class="btn-portal azubi">1. Auszubildende/r (Ohne Login)</button>
+            <button onclick="showLogin('ausbilder')" class="btn-portal ausbilder">2. Ausbilder/in</button>
+            <button onclick="showLogin('kommission')" class="btn-portal kommission">3. Prüfungskommission</button>
+        </div>
+
+        <div id="loginSection" class="login-box" style="display: none;">
+            <h2 id="loginTitle">Login</h2>
+            <input type="text" id="username" placeholder="Benutzername">
+            <input type="password" id="password" placeholder="Passwort">
+            <button onclick="doLogin()">Einloggen</button>
+            <button onclick="goBack()" class="btn-back">Zurück</button>
+            <p id="loginError" style="color: #c23616; display: none; margin-top: 10px;">Falsche Daten!</p>
+        </div>
+
+        <div id="portal-azubi" class="portal-content" style="display: none;">
+            <header>
+                <h2>Azubi Portal</h2>
+                <button onclick="goBack()" class="btn-back">Beenden</button>
+            </header>
+            
+            <h3>Geplante Ausbildungen</h3>
+            <div id="azubiSchedules" class="schedule-list">
+                </div>
+
+            <h3 style="margin-top: 30px;">Prüfungsbereich</h3>
+            <div id="azubiExams" class="exam-list">
+                <p>Derzeit sind keine Prüfungen freigeschaltet.</p>
+            </div>
+        </div>
+
+        <div id="portal-ausbilder" class="portal-content" style="display: none;">
+            <header>
+                <h2>Ausbilder Portal</h2>
+                <button onclick="logout()" class="btn-back">Ausloggen</button>
+            </header>
+
+            <div class="module-section">
+                <h3>Ausbildungsmodule</h3>
+                <a href="https://docs.google.com/presentation/d/1dsLpxzoutCNwveCpcIGXBNMMvw4i_kjtF1UUoiXFde4/edit?slide=id.g3affe29eeff_0_7#slide=id.g3affe29eeff_0_7" target="_blank" class="module-link">Modul 1 - Grundwissen</a>
+                <a href="https://docs.google.com/presentation/d/1wXW27UhpQbMxghyLg99FGA2hXXLnBFjdLs0CgIEBYRk/edit?usp=sharing" target="_blank" class="module-link">Modul 2 - Täglicher Polizeidienst</a>
+                <a href="https://docs.google.com/presentation/d/1TTWdR5CDGtZQ_MtDE6cFEAwMxsa1_cr4vkiixid9SQY/edit?usp=sharing" target="_blank" class="module-link">Modul 3 - Rechtslehre</a>
+                <a href="https://docs.google.com/presentation/d/1Zu96cZGiLWI1c1heyTMEV9wImtUjhXfmLDIaQHT8Y6Q/edit?usp=sharing" target="_blank" class="module-link">Zusatzfortbildung - Ortskunde</a>
+            </div>
+
+            <div class="schedule-section">
+                <h3>+ Neuen Termin anlegen</h3>
+                <input type="date" id="schedDate">
+                <input type="time" id="schedTime">
+                <select id="schedProgram">
+                    <option value="Modul 1 - Grundwissen">Modul 1</option>
+                    <option value="Modul 2 - Täglicher Polizeidienst">Modul 2</option>
+                    <option value="Modul 3 - Rechtslehre">Modul 3</option>
+                    <option value="Zusatzfortbildung">Zusatzfortbildung</option>
+                </select>
+                <button onclick="addSchedule()">Termin eintragen</button>
+            </div>
+        </div>
+
+        <div id="portal-kommission" class="portal-content" style="display: none;">
+            <header>
+                <h2>Prüfungskommission Portal</h2>
+                <button onclick="logout()" class="btn-back">Ausloggen</button>
+            </header>
+
+            <div class="module-section">
+                <h3>Ausbildungsmodule (Einsicht)</h3>
+                <a href="https://docs.google.com/presentation/d/1dsLpxzoutCNwveCpcIGXBNMMvw4i_kjtF1UUoiXFde4/edit" target="_blank" class="module-link">Modul 1</a>
+                <a href="https://docs.google.com/presentation/d/1wXW27UhpQbMxghyLg99FGA2hXXLnBFjdLs0CgIEBYRk/edit" target="_blank" class="module-link">Modul 2</a>
+                <a href="https://docs.google.com/presentation/d/1TTWdR5CDGtZQ_MtDE6cFEAwMxsa1_cr4vkiixid9SQY/edit" target="_blank" class="module-link">Modul 3</a>
+            </div>
+
+            <div class="exam-control-section">
+                <h3>Prüfungsverwaltung</h3>
+                <p>Prüfungslinks für Auszubildende freischalten (5 Minuten):</p>
+                <button id="unlockBtn" onclick="unlockExams()" class="btn-exam-unlock">Prüfungen jetzt freischalten</button>
+                <p id="cooldownText" style="color: #e1b12c; display:none;"></p>
+                
+                <h4 style="margin-top: 20px;">Direkteinsicht (Nur für Kommission):</h4>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSevtU3kABQmHy8YjPqyP0sXwH2UV9YruMKOQH3BKu37J_1xuQ/viewform?usp=sharing&ouid=111122932360706081640" target="_blank" class="module-link exam">Prüfung Modul 1 (Forms)</a>
+                <a href="https://forms.gle/nuzS3cDVn3FucxKW7" target="_blank" class="module-link exam">Prüfung Modul 2 (Forms)</a>
+                <a href="https://forms.gle/hfTeo3K8zCjM4UHt7" target="_blank" class="module-link exam">Prüfung Modul 3 (Forms)</a>
+                <a href="GA_DDK_M4.pdf" target="_blank" class="module-link pdf">Modul 4 - Fahrsicherheitstraining (PDF)</a>
+                <a href="GA_DDK_M5.pdf" target="_blank" class="module-link pdf">Modul 5 - Funk (PDF)</a>
+                <a href="GA_DDK_M6.pdf" target="_blank" class="module-link pdf">Modul 6 - Sporttest (PDF)</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
