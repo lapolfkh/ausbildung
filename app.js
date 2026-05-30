@@ -3,7 +3,7 @@ const SUPABASE_URL = "https://faopamglziztknceaqsv.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhb3BhbWdseml6dGtuY2VhcXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNDE3MTQsImV4cCI6MjA5NTcxNzcxNH0.7Da4mEBPW1p3jQ6x_v3IuG2BNVmT7OmORjyM3F-I7x8";
 
 // Verbindung zu Supabase herstellen
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Admin Zugangsdaten
 const ADMIN_USER = "PolizeiAdmin";
@@ -56,7 +56,7 @@ async function createNewModule() {
 
     if (error) {
         console.error("Fehler beim Hochladen:", error);
-        alert("Fehler beim Speichern in der Datenbank!");
+        alert("Fehler beim Speichern in der Datenbank! Überprüfe die RLS-Einstellungen.");
     } else {
         // Felder leeren
         document.getElementById('modName').value = '';
@@ -87,7 +87,8 @@ async function renderModules(searchQuery = '') {
         .select('*');
 
     if (error) {
-        container.innerHTML = '<p>Fehler beim Laden der Module.</p>';
+        console.error("Fehler beim Abrufen der Daten:", error);
+        container.innerHTML = '<p>Fehler beim Laden der Module. Bitte RLS in Supabase prüfen!</p>';
         return;
     }
 
