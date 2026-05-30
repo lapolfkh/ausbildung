@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolizeiAdmin - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="loginSection" class="container login-box">
+        <h2>Admin Login</h2>
+        <input type="text" id="username" placeholder="Benutzername">
+        <input type="password" id="password" placeholder="Passwort">
+        <button onclick="login()">Einloggen</button>
+        <p id="loginError" style="color: red; display: none;">Falsche Anmeldedaten!</p>
+        <a href="index.html" style="color: white; display: inline-block; margin-top: 15px;">Zurück zur Hauptseite</a>
+    </div>
+
+    <div id="adminDashboard" class="container" style="display: none;">
+        <header>
+            <h1>Admin Dashboard</h1>
+            <button onclick="logout()" class="btn-logout">Ausloggen</button>
+            <a href="index.html" class="btn-admin">Zur Hauptseite</a>
+        </header>
+
+        <section class="upload-form">
+            <h3>Neues Modul hochladen</h3>
+            <input type="text" id="modName" placeholder="Modul Name (z.B. Modul 1)">
+            <input type="url" id="modLink" placeholder="Google Docs / Präsentations Link">
+            <label for="modStatus">Status:</label>
+            <select id="modStatus">
+                <option value="In Verwendung">In Verwendung</option>
+                <option value="In Bearbeitung">In Bearbeitung</option>
+                <option value="Außerkraft gesetzt">Außerkraft gesetzt</option>
+            </select>
+            <button onclick="createNewModule()">Modul speichern</button>
+        </section>
+
+        <h3>Bestehende Module verwalten</h3>
+        <main id="adminModulesContainer" class="modules-grid">
+            </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Prüft beim Laden, ob der Admin schon eingeloggt ist
+        document.addEventListener('DOMContentLoaded', () => {
+            if(sessionStorage.getItem('isAdmin') === 'true') {
+                showDashboard();
+            }
+        });
+    </script>
+</body>
+</html>
