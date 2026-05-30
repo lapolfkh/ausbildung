@@ -15,7 +15,7 @@
         </header>
 
         <div id="mainMenu" class="portal-selection">
-            <button onclick="openPortal('azubi')" class="btn-portal azubi">1. Auszubildende/r</button>
+            <button onclick="openPortal('azubi')" class="btn-portal azubi">1. Auszubildende/r (Ohne Login)</button>
             <button onclick="showLogin('ausbilder')" class="btn-portal ausbilder">2. Ausbilder/in</button>
             <button onclick="showLogin('kommission')" class="btn-portal kommission">3. Prüfungskommission</button>
         </div>
@@ -25,7 +25,7 @@
             <form onsubmit="event.preventDefault(); doLogin();">
                 <input type="text" id="username" placeholder="Benutzername">
                 <input type="password" id="password" placeholder="Passwort">
-                <button type="submit">Einloggen</button>
+                <button type="submit" class="btn-login-submit">Einloggen</button>
             </form>
             <button onclick="goBack()" class="btn-back">Zurück</button>
             <p id="loginError" style="color: #ff3333; display: none; margin-top: 10px;">Falsche Daten!</p>
