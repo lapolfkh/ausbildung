@@ -6,7 +6,7 @@
     <title>Polizei Falkenheim - Ausbildungsportal</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body id="portalBody">
 
     <div class="container">
         <header>
@@ -15,18 +15,21 @@
         </header>
 
         <div id="mainMenu" class="portal-selection">
-            <button onclick="openPortal('azubi')" class="btn-portal azubi">1. Auszubildende/r (Ohne Login)</button>
+            <button onclick="openPortal('azubi')" class="btn-portal azubi">1. Auszubildende/r</button>
             <button onclick="showLogin('ausbilder')" class="btn-portal ausbilder">2. Ausbilder/in</button>
             <button onclick="showLogin('kommission')" class="btn-portal kommission">3. Prüfungskommission</button>
         </div>
 
         <div id="loginSection" class="login-box" style="display: none;">
             <h2 id="loginTitle">Login</h2>
-            <input type="text" id="username" placeholder="Benutzername">
-            <input type="password" id="password" placeholder="Passwort">
-            <button onclick="doLogin()">Einloggen</button>
+            <form onsubmit="event.preventDefault(); doLogin();">
+                <input type="text" id="username" placeholder="Benutzername">
+                <input type="password" id="password" placeholder="Passwort">
+                <button type="submit">Einloggen</button>
+            </form>
             <button onclick="goBack()" class="btn-back">Zurück</button>
-            <p id="loginError" style="color: #c23616; display: none; margin-top: 10px;">Falsche Daten!</p>
+            <p id="loginError" style="color: #ff3333; display: none; margin-top: 10px;">Falsche Daten!</p>
+            <p id="lockoutText" style="color: #ff3333; display: none; margin-top: 10px;">Zugang für 5 Minuten gesperrt!</p>
         </div>
 
         <div id="portal-azubi" class="portal-content" style="display: none;">
@@ -35,7 +38,7 @@
                 <button onclick="goBack()" class="btn-back">Beenden</button>
             </header>
             
-            <h3>Geplante Ausbildungen</h3>
+            <h3>Geplante Ausbildungen & Prüfungen</h3>
             <div id="azubiSchedules" class="schedule-list">
                 </div>
 
@@ -61,16 +64,19 @@
 
             <div class="schedule-section">
                 <h3>+ Neuen Termin anlegen</h3>
-                <input type="date" id="schedDate">
-                <input type="time" id="schedTime">
-                <select id="schedProgram">
-                    <option value="Modul 1 - Grundwissen">Modul 1</option>
-                    <option value="Modul 2 - Täglicher Polizeidienst">Modul 2</option>
-                    <option value="Modul 3 - Rechtslehre">Modul 3</option>
-                    <option value="Zusatzfortbildung">Zusatzfortbildung</option>
+                <input type="date" id="schedDate_ausbilder">
+                <input type="time" id="schedTime_ausbilder" value="18:00">
+                <select id="schedProgram_ausbilder">
+                    <option value="Ausbildung: Modul 1 - Grundwissen">Modul 1</option>
+                    <option value="Ausbildung: Modul 2 - Täglicher Dienst">Modul 2</option>
+                    <option value="Ausbildung: Modul 3 - Rechtslehre">Modul 3</option>
+                    <option value="Ausbildung: Zusatzfortbildung - Ortskunde">Zusatzfortbildung</option>
                 </select>
-                <button onclick="addSchedule()">Termin eintragen</button>
+                <button onclick="addSchedule('ausbilder')">Termin eintragen</button>
             </div>
+
+            <h3>Eigene Termine verwalten</h3>
+            <div id="ausbilderSchedulesContainer" class="schedule-management-list"></div>
         </div>
 
         <div id="portal-kommission" class="portal-content" style="display: none;">
@@ -79,20 +85,54 @@
                 <button onclick="logout()" class="btn-back">Ausloggen</button>
             </header>
 
-            <div class="module-section">
-                <h3>Ausbildungsmodule (Einsicht)</h3>
-                <a href="https://docs.google.com/presentation/d/1dsLpxzoutCNwveCpcIGXBNMMvw4i_kjtF1UUoiXFde4/edit" target="_blank" class="module-link">Modul 1</a>
-                <a href="https://docs.google.com/presentation/d/1wXW27UhpQbMxghyLg99FGA2hXXLnBFjdLs0CgIEBYRk/edit" target="_blank" class="module-link">Modul 2</a>
-                <a href="https://docs.google.com/presentation/d/1TTWdR5CDGtZQ_MtDE6cFEAwMxsa1_cr4vkiixid9SQY/edit" target="_blank" class="module-link">Modul 3</a>
+            <div class="schedule-section">
+                <h3>+ Ausbildung- / Prüfungstermin anlegen</h3>
+                <input type="date" id="schedDate_kommission">
+                <input type="time" id="schedTime_kommission" value="18:00">
+                <select id="schedProgram_kommission">
+                    <option value="Ausbildung: Modul 1 - Grundwissen">Modul 1 (Ausbildung)</option>
+                    <option value="Ausbildung: Modul 2 - Täglicher Dienst">Modul 2 (Ausbildung)</option>
+                    <option value="Ausbildung: Modul 3 - Rechtslehre">Modul 3 (Ausbildung)</option>
+                    <option value="Ausbildung: Zusatzfortbildung - Ortskunde">Zusatzfortbildung</option>
+                    <option value="⚠️ PRÜFUNG: Modul 1">Prüfung Modul 1</option>
+                    <option value="⚠️ PRÜFUNG: Modul 2">Prüfung Modul 2</option>
+                    <option value="⚠️ PRÜFUNG: Modul 3">Prüfung Modul 3</option>
+                    <option value="⚠️ PRÜFUNG: Modul 4 - Fahrsicherheit">Prüfung Modul 4 (PDF)</option>
+                    <option value="⚠️ PRÜFUNG: Modul 5 - Funk">Prüfung Modul 5 (PDF)</option>
+                    <option value="⚠️ PRÜFUNG: Modul 6 - Sporttest">Prüfung Modul 6 (PDF)</option>
+                </select>
+                <button onclick="addSchedule('kommission')">Termin eintragen</button>
             </div>
 
+            <h3>Alle Termine verwalten (Kommission & Ausbilder)</h3>
+            <div id="kommissionSchedulesContainer" class="schedule-management-list" style="margin-bottom: 25px;"></div>
+
             <div class="exam-control-section">
-                <h3>Prüfungsverwaltung</h3>
-                <p>Prüfungslinks für Auszubildende freischalten (5 Minuten):</p>
-                <button id="unlockBtn" onclick="unlockExams()" class="btn-exam-unlock">Prüfungen jetzt freischalten</button>
-                <p id="cooldownText" style="color: #e1b12c; display:none;"></p>
+                <h3>Prüfungs-Freischaltung (Live-Forms)</h3>
+                <p>Wähle Prüfungslinks zum Freischalten für Auszubildende (5 Minuten):</p>
                 
-                <h4 style="margin-top: 20px;">Direkteinsicht (Nur für Kommission):</h4>
+                <div class="exam-checkboxes">
+                    <label class="container-checkbox">
+                        <input type="checkbox" id="checkExam1">
+                        <span class="checkmark"></span>
+                        Prüfung Modul 1
+                    </label>
+                    <label class="container-checkbox">
+                        <input type="checkbox" id="checkExam2">
+                        <span class="checkmark"></span>
+                        Prüfung Modul 2
+                    </label>
+                    <label class="container-checkbox">
+                        <input type="checkbox" id="checkExam3">
+                        <span class="checkmark"></span>
+                        Prüfung Modul 3
+                    </label>
+                </div>
+
+                <button id="unlockBtn" onclick="unlockSelectedExams()" class="btn-exam-unlock">Ausgewählte Prüfungen jetzt freischalten</button>
+                <p id="cooldownText" style="color: #ffb703; display:none; font-weight: bold;"></p>
+                
+                <h4 style="margin-top: 20px;">Direkteinsicht Unterlagen:</h4>
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSevtU3kABQmHy8YjPqyP0sXwH2UV9YruMKOQH3BKu37J_1xuQ/viewform?usp=sharing&ouid=111122932360706081640" target="_blank" class="module-link exam">Prüfung Modul 1 (Forms)</a>
                 <a href="https://forms.gle/nuzS3cDVn3FucxKW7" target="_blank" class="module-link exam">Prüfung Modul 2 (Forms)</a>
                 <a href="https://forms.gle/hfTeo3K8zCjM4UHt7" target="_blank" class="module-link exam">Prüfung Modul 3 (Forms)</a>
